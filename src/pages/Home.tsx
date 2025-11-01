@@ -8,6 +8,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { supabase } from "@/integrations/supabase/client";
 import { Heart } from "lucide-react";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
+import FloatingHearts from "@/components/FloatingHearts";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -100,21 +102,65 @@ const Home = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="glass-card p-8 rounded-3xl max-w-md w-full glow-effect-lg">
-        <div className="text-center mb-8">
-          <div className="flex justify-center mb-4">
-            <Heart className="w-16 h-16 text-accent animate-heart-beat" fill="currentColor" />
-          </div>
-          <h1 className="text-5xl font-bold mb-2 gradient-text">Heart Link</h1>
-          <p className="text-muted-foreground text-lg">Connect through truth and dare</p>
-        </div>
+    <div className="min-h-screen flex items-center justify-center p-4 relative">
+      <FloatingHearts />
 
-        <div className="space-y-4">
+      <motion.div
+        className="glass-card p-8 rounded-3xl max-w-md w-full glow-effect-lg"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: "easeOut" }}
+      >
+        <motion.div
+          className="text-center mb-8"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        >
+          <motion.div
+            className="flex justify-center mb-4"
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{
+              type: "spring",
+              stiffness: 260,
+              damping: 20,
+              delay: 0.3,
+            }}
+          >
+            <Heart
+              className="w-16 h-16 text-accent animate-heart-beat"
+              fill="currentColor"
+            />
+          </motion.div>
+          <motion.h1
+            className="text-5xl font-bold mb-2 gradient-text"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+          >
+            Heart Link
+          </motion.h1>
+          <motion.p
+            className="text-muted-foreground text-lg"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.5 }}
+          >
+            Connect through truth and dare
+          </motion.p>
+        </motion.div>
+
+        <motion.div
+          className="space-y-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.6 }}
+        >
           <Dialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}>
             <DialogTrigger asChild>
-              <Button 
-                className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-primary to-accent hover:scale-105 transition-transform glow-effect"
+              <Button
+                className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-primary to-accent hover:shadow-lg hover:shadow-accent/50 transition-all duration-300 glow-effect"
                 size="lg"
               >
                 Create Room
@@ -122,7 +168,9 @@ const Home = () => {
             </DialogTrigger>
             <DialogContent className="glass-card border-accent/20">
               <DialogHeader>
-                <DialogTitle className="text-2xl gradient-text">Create New Room</DialogTitle>
+                <DialogTitle className="text-2xl gradient-text">
+                  Create New Room
+                </DialogTitle>
               </DialogHeader>
               <div className="space-y-4 mt-4">
                 <div className="space-y-2">
@@ -131,7 +179,9 @@ const Home = () => {
                     id="create-name"
                     placeholder="Enter your name"
                     value={createForm.name}
-                    onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })}
+                    onChange={(e) =>
+                      setCreateForm({ ...createForm, name: e.target.value })
+                    }
                     className="bg-input border-accent/20"
                   />
                 </div>
@@ -139,7 +189,9 @@ const Home = () => {
                   <Label htmlFor="game-mode">Game Mode</Label>
                   <Select
                     value={createForm.gameMode}
-                    onValueChange={(value) => setCreateForm({ ...createForm, gameMode: value as any })}
+                    onValueChange={(value) =>
+                      setCreateForm({ ...createForm, gameMode: value as any })
+                    }
                   >
                     <SelectTrigger id="game-mode" className="bg-input border-accent/20">
                       <SelectValue />
@@ -151,8 +203,8 @@ const Home = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                <Button 
-                  onClick={handleCreateRoom} 
+                <Button
+                  onClick={handleCreateRoom}
                   className="w-full bg-gradient-to-r from-primary to-accent glow-effect"
                 >
                   Create Room
@@ -163,9 +215,9 @@ const Home = () => {
 
           <Dialog open={joinDialogOpen} onOpenChange={setJoinDialogOpen}>
             <DialogTrigger asChild>
-              <Button 
-                variant="outline" 
-                className="w-full h-14 text-lg font-semibold border-2 border-accent/50 hover:bg-accent/10 hover:scale-105 transition-transform"
+              <Button
+                variant="outline"
+                className="w-full h-14 text-lg font-semibold border-2 border-accent/50 hover:bg-accent/10 transition-all duration-300"
                 size="lg"
               >
                 Join Room
@@ -173,7 +225,9 @@ const Home = () => {
             </DialogTrigger>
             <DialogContent className="glass-card border-accent/20">
               <DialogHeader>
-                <DialogTitle className="text-2xl gradient-text">Join Room</DialogTitle>
+                <DialogTitle className="text-2xl gradient-text">
+                  Join Room
+                </DialogTitle>
               </DialogHeader>
               <div className="space-y-4 mt-4">
                 <div className="space-y-2">
@@ -182,7 +236,9 @@ const Home = () => {
                     id="join-name"
                     placeholder="Enter your name"
                     value={joinForm.name}
-                    onChange={(e) => setJoinForm({ ...joinForm, name: e.target.value })}
+                    onChange={(e) =>
+                      setJoinForm({ ...joinForm, name: e.target.value })
+                    }
                     className="bg-input border-accent/20"
                   />
                 </div>
@@ -192,12 +248,17 @@ const Home = () => {
                     id="room-code"
                     placeholder="Enter 6-character code"
                     value={joinForm.roomCode}
-                    onChange={(e) => setJoinForm({ ...joinForm, roomCode: e.target.value.toUpperCase() })}
+                    onChange={(e) =>
+                      setJoinForm({
+                        ...joinForm,
+                        roomCode: e.target.value.toUpperCase(),
+                      })
+                    }
                     maxLength={6}
                     className="bg-input border-accent/20 uppercase tracking-widest text-center text-xl font-bold"
                   />
                 </div>
-                <Button 
+                <Button
                   onClick={handleJoinRoom}
                   className="w-full bg-gradient-to-r from-primary to-accent glow-effect"
                 >
@@ -206,12 +267,17 @@ const Home = () => {
               </div>
             </DialogContent>
           </Dialog>
-        </div>
+        </motion.div>
 
-        <div className="mt-8 text-center text-sm text-muted-foreground">
+        <motion.div
+          className="mt-8 text-center text-sm text-muted-foreground"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.7 }}
+        >
           <p>Two players • Real-time sync • Pure fun</p>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </div>
   );
 };
