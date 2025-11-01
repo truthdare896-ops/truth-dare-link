@@ -1,0 +1,85 @@
+export const questions = {
+  friendly: {
+    truth: [
+      "What's the most embarrassing thing that's ever happened to you?",
+      "What's your biggest fear?",
+      "What's the weirdest dream you've ever had?",
+      "What's your most unusual talent?",
+      "What's the funniest thing that's happened to you recently?",
+      "If you could have dinner with anyone, dead or alive, who would it be?",
+      "What's your guilty pleasure?",
+      "What's the worst fashion choice you've ever made?",
+      "What's your most embarrassing childhood memory?",
+      "If you could switch lives with someone for a day, who would it be?",
+    ],
+    dare: [
+      "Do your best impression of a celebrity.",
+      "Show your most used emoji and explain why you use it so much.",
+      "Send a text to a random contact saying 'I know what you did'.",
+      "Do 10 jumping jacks right now.",
+      "Speak in an accent for the next 3 rounds.",
+      "Let the other player choose a song for you to dance to.",
+      "Share a funny photo from your camera roll.",
+      "Tell a joke (it has to make the other player laugh).",
+      "Balance a book on your head for 1 minute.",
+      "Sing the chorus of your favorite song.",
+    ],
+  },
+  crush: {
+    truth: [
+      "What was your first impression of me?",
+      "What's your idea of a perfect date?",
+      "Have you ever had a crush on someone's voice?",
+      "What's the most romantic thing someone has done for you?",
+      "What quality do you find most attractive in a person?",
+      "What's your love language?",
+      "Do you believe in love at first sight?",
+      "What's your biggest turn-off in a relationship?",
+      "Have you ever been in love? Tell me about it.",
+      "What would your ideal partner be like?",
+    ],
+    dare: [
+      "Compliment the other player in three different ways.",
+      "Share your most romantic song.",
+      "Text your crush (or the other player) a heart emoji.",
+      "Tell the other player three things you like about them.",
+      "Share a romantic memory.",
+      "Give the other player a nickname right now.",
+      "Look into the other player's eyes for 30 seconds without laughing.",
+      "Send a voice note saying 'You make my heart smile'.",
+      "Share your best pickup line.",
+      "Tell the other player what caught your attention about them.",
+    ],
+  },
+  adult: {
+    truth: [
+      "What's the most daring thing you've ever done?",
+      "What's your biggest secret desire?",
+      "Have you ever had a friends-with-benefits situation?",
+      "What's your most memorable romantic encounter?",
+      "What's something you've always wanted to try but haven't yet?",
+      "What's your biggest turn-on?",
+      "Have you ever had a romantic dream about someone you know?",
+      "What's the most adventurous place you've been intimate?",
+      "What's something that instantly attracts you to someone?",
+      "What's your wildest fantasy?",
+    ],
+    dare: [
+      "Send a flirty text to someone you're interested in.",
+      "Share your most attractive photo.",
+      "Tell the other player your most romantic fantasy.",
+      "Describe your perfect romantic evening in detail.",
+      "Give the other player a sultry look for 15 seconds.",
+      "Share a secret you've never told anyone.",
+      "Tell the other player what you find most attractive about them physically.",
+      "Send a voice note with your sexiest voice.",
+      "Share a song that puts you in a romantic mood.",
+      "Tell the other player something that would make them blush.",
+    ],
+  },
+};
+
+export const getRandomQuestion = (mode: "friendly" | "crush" | "adult", type: "truth" | "dare"): string => {
+  const modeQuestions = questions[mode][type];
+  return modeQuestions[Math.floor(Math.random() * modeQuestions.length)];
+};
