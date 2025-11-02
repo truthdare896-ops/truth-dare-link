@@ -186,7 +186,7 @@ const GameRoom = () => {
 
   if (!room) return null;
 
-  const heartProgress = Math.min(100, (turns.filter(t => t.answer).length / 10) * 100);
+  const heartProgress = Math.min(100, (turns.filter(t => t.answer).length / 20) * 100);
 
   return (
     <div className="min-h-screen p-4 relative">
