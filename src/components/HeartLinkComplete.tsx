@@ -41,7 +41,7 @@ const HeartLinkComplete = ({ player1Name, player2Name, roomId }: HeartLinkComple
 
       <div className="relative z-10 w-full h-full flex items-center justify-center px-4 sm:px-6 md:px-8">
         <motion.div
-          className="absolute left-[5%] sm:left-[8%] md:left-[10%] top-[40%] sm:top-1/2"
+          className="absolute left-[5%] sm:left-[8%] md:left-[10%] top-1/2"
           initial={{ x: 0, y: "-50%", scale: 1, opacity: 0 }}
           animate={{ x: 0, y: "-50%", scale: 1, opacity: 1 }}
           transition={{ duration: 1, delay: 1 }}
@@ -66,7 +66,7 @@ const HeartLinkComplete = ({ player1Name, player2Name, roomId }: HeartLinkComple
               }}
             />
             <motion.p
-              className="text-center mt-1 sm:mt-2 font-bold text-white text-xs sm:text-sm md:text-base"
+              className="text-center mt-1 sm:mt-2 font-bold text-white text-xs sm:text-sm md:text-base whitespace-nowrap"
               initial={{ opacity: 1 }}
               animate={{ opacity: 0 }}
               transition={{ duration: 0.5, delay: 2.5 }}
@@ -77,7 +77,7 @@ const HeartLinkComplete = ({ player1Name, player2Name, roomId }: HeartLinkComple
         </motion.div>
 
         <motion.div
-          className="absolute right-[5%] sm:right-[8%] md:right-[10%] top-[40%] sm:top-1/2"
+          className="absolute right-[5%] sm:right-[8%] md:right-[10%] top-1/2"
           initial={{ x: 0, y: "-50%", scale: 1, opacity: 0 }}
           animate={{ x: 0, y: "-50%", scale: 1, opacity: 1 }}
           transition={{ duration: 1, delay: 1 }}
@@ -102,7 +102,7 @@ const HeartLinkComplete = ({ player1Name, player2Name, roomId }: HeartLinkComple
               }}
             />
             <motion.p
-              className="text-center mt-1 sm:mt-2 font-bold text-white text-xs sm:text-sm md:text-base"
+              className="text-center mt-1 sm:mt-2 font-bold text-white text-xs sm:text-sm md:text-base whitespace-nowrap"
               initial={{ opacity: 1 }}
               animate={{ opacity: 0 }}
               transition={{ duration: 0.5, delay: 2.5 }}
@@ -169,8 +169,8 @@ const HeartLinkComplete = ({ player1Name, player2Name, roomId }: HeartLinkComple
         </motion.div>
 
         <motion.div
-          className="absolute top-[60%] sm:top-[55%] left-1/2 -translate-x-1/2 text-center w-full px-4 sm:px-6 md:px-8 max-w-4xl"
-          initial={{ opacity: 0, y: "20vh" }}
+          className="absolute bottom-0 left-1/2 -translate-x-1/2 text-center w-full px-4 sm:px-6 md:px-8 max-w-4xl pb-8 sm:pb-12 md:pb-16"
+          initial={{ opacity: 0, y: "10vh" }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 5.5 }}
         >
