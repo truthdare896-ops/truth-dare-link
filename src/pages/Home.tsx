@@ -58,7 +58,6 @@ const Home = () => {
 
       navigate(`/lobby/${data.id}`, { state: { isHost: true, playerName: createForm.name.trim() } });
     } catch (error) {
-      console.error("Error creating room:", error);
       toast.error("Failed to create room. Please try again.");
     }
   };
@@ -96,7 +95,6 @@ const Home = () => {
 
       navigate(`/lobby/${room.id}`, { state: { isHost: false, playerName: joinForm.name.trim() } });
     } catch (error) {
-      console.error("Error joining room:", error);
       toast.error("Failed to join room. Please try again.");
     }
   };

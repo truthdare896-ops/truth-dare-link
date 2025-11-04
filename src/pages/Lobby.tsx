@@ -71,7 +71,6 @@ const Lobby = () => {
       if (error) throw error;
       setRoom(data);
     } catch (error) {
-      console.error("Error fetching room:", error);
       toast.error("Failed to load room");
       navigate("/");
     } finally {
@@ -102,7 +101,6 @@ const Lobby = () => {
 
       if (error) throw error;
     } catch (error) {
-      console.error("Error starting game:", error);
       toast.error("Failed to start game");
     }
   };

@@ -106,7 +106,6 @@ const GameRoom = () => {
       if (error) throw error;
       setRoom(data as Room);
     } catch (error) {
-      console.error("Error fetching room:", error);
       toast.error("Failed to load game");
       navigate("/");
     } finally {
@@ -125,7 +124,7 @@ const GameRoom = () => {
       if (error) throw error;
       setTurns((data || []) as GameTurn[]);
     } catch (error) {
-      console.error("Error fetching turns:", error);
+      toast.error("Failed to load game turns");
     }
   };
 
@@ -147,7 +146,6 @@ const GameRoom = () => {
       if (error) throw error;
       setShowWheel(false);
     } catch (error) {
-      console.error("Error creating turn:", error);
       toast.error("Failed to create question");
     }
   };
@@ -171,7 +169,6 @@ const GameRoom = () => {
       setAnswer("");
       toast.success("Answer submitted!");
     } catch (error) {
-      console.error("Error submitting answer:", error);
       toast.error("Failed to submit answer");
     }
   };
