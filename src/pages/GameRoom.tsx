@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import SpinWheel from "@/components/SpinWheel";
 import HeartProgressBar from "@/components/HeartProgressBar";
+import HeartLinkComplete from "@/components/HeartLinkComplete";
 import { getRandomQuestion } from "@/utils/questions";
 import { motion, AnimatePresence } from "framer-motion";
 import DynamicBackground from "@/components/DynamicBackground";
@@ -44,6 +45,7 @@ const GameRoom = () => {
   const [isMyTurn, setIsMyTurn] = useState(false);
   const [showWheel, setShowWheel] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [showCompletion, setShowCompletion] = useState(false);
 
   useEffect(() => {
     if (!roomId || !playerName) {
@@ -184,6 +186,20 @@ const GameRoom = () => {
   if (!room) return null;
 
   const heartProgress = Math.min(100, (turns.filter(t => t.answer).length / 20) * 100);
+
+  if (heartProgress >= 100 && !showCompletion) {
+    setTimeout(() => setShowCompletion(true), 500);
+  }
+
+  if (showCompletion) {
+    return (
+      <HeartLinkComplete
+        player1Name={room.player1_name}
+        player2Name={room.player2_name}
+        roomId={room.id}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen p-4 relative">
