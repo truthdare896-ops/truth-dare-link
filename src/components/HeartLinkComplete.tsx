@@ -36,21 +36,21 @@ const HeartLinkComplete = ({ player1Name, player2Name, roomId }: HeartLinkComple
             "linear-gradient(135deg, #c77dff 0%, #e0aaff 100%)",
           ],
         }}
-        transition={{ duration: 2, delay: 0.5 }}
+        transition={{ duration: 1.5, delay: 0.2 }}
       />
 
       <div className="relative z-10 w-full h-full flex items-center justify-center px-4 sm:px-6 md:px-8">
-        <motion.div
+          <motion.div
           className="flex items-center justify-center"
           initial={{ opacity: 0, y: "10vh" }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
         >
           <motion.div
             className="flex flex-col items-center justify-center text-center w-full px-4 sm:px-6 md:px-8 max-w-4xl"
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
-            transition={{ duration: 0.5, delay: 6 }}
+            transition={{ duration: 0.3, delay: 0.3 }}
           >
             <motion.div
               className="mb-6"
@@ -86,7 +86,7 @@ const HeartLinkComplete = ({ player1Name, player2Name, roomId }: HeartLinkComple
               className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center w-full sm:w-auto px-2"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 6.5 }}
+              transition={{ duration: 0.5, delay: 0.8 }}
             >
               <Button
                 onClick={handlePlayAgain}
