@@ -113,7 +113,7 @@ const HeartLinkComplete = ({ player1Name, player2Name, roomId }: HeartLinkComple
         </motion.div>
 
         <motion.div
-          className="absolute top-[35%] sm:top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 1.5, delay: 4, type: "spring", stiffness: 200 }}
@@ -169,7 +169,7 @@ const HeartLinkComplete = ({ player1Name, player2Name, roomId }: HeartLinkComple
         </motion.div>
 
         <motion.div
-          className="absolute top-[60%] sm:top-[65%] md:top-[60%] left-1/2 -translate-x-1/2 text-center w-full px-4 sm:px-6 md:px-8 max-w-4xl"
+          className="absolute top-[60%] sm:top-[55%] left-1/2 -translate-x-1/2 text-center w-full px-4 sm:px-6 md:px-8 max-w-4xl"
           initial={{ opacity: 0, y: "20vh" }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 5.5 }}
@@ -205,14 +205,14 @@ const HeartLinkComplete = ({ player1Name, player2Name, roomId }: HeartLinkComple
               Your hearts are now linked!
             </h1>
 
-            <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white/90 max-w-xs sm:max-w-md md:max-w-2xl mx-auto leading-relaxed px-2">
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white/90 max-w-xs sm:max-w-md md:max-w-2xl mx-auto leading-relaxed px-2 mb-6 sm:mb-8">
               You've completed your Heart Link journey together.
               <br />
               The game ends, but your bond begins.
             </p>
 
             <motion.div
-              className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mt-4 sm:mt-6 md:mt-8 px-2"
+              className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mt-2 sm:mt-4 px-2"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 6.5 }}
