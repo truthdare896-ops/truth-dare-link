@@ -169,19 +169,19 @@ const HeartLinkComplete = ({ player1Name, player2Name, roomId }: HeartLinkComple
         </motion.div>
 
         <motion.div
-          className="absolute bottom-0 left-1/2 -translate-x-1/2 text-center w-full px-4 sm:px-6 md:px-8 max-w-4xl pb-8 sm:pb-12 md:pb-16"
+          className="absolute inset-0 flex items-center justify-center"
           initial={{ opacity: 0, y: "10vh" }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 5.5 }}
         >
           <motion.div
-            className="space-y-3 sm:space-y-4 md:space-y-6"
+            className="flex flex-col items-center justify-center text-center w-full px-4 sm:px-6 md:px-8 max-w-4xl"
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
             transition={{ duration: 0.5, delay: 6 }}
           >
             <motion.div
-              className="mb-2 sm:mb-3 md:mb-4"
+              className="mb-6"
               animate={{
                 scale: [1, 1.2, 1],
               }}
@@ -192,27 +192,27 @@ const HeartLinkComplete = ({ player1Name, player2Name, roomId }: HeartLinkComple
               }}
             >
               <Heart
-                className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 mx-auto mb-2 sm:mb-3 md:mb-4"
+                className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 mx-auto"
                 fill="#ffffff"
                 stroke="#ffffff"
               />
             </motion.div>
 
             <h1
-              className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-2 sm:mb-3 md:mb-4 px-2"
+              className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-6 px-2"
               style={{ textShadow: "0 0 20px rgba(255,255,255,0.5)" }}
             >
               Your hearts are now linked!
             </h1>
 
-            <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white/90 max-w-xs sm:max-w-md md:max-w-2xl mx-auto leading-relaxed px-2 mb-6 sm:mb-8">
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl xl:text-2xl text-white/90 max-w-xs sm:max-w-md md:max-w-2xl mx-auto leading-relaxed px-2 mb-6">
               You've completed your Heart Link journey together.
               <br />
               The game ends, but your bond begins.
             </p>
 
             <motion.div
-              className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center mt-2 sm:mt-4 px-2"
+              className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center w-full sm:w-auto px-2"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 6.5 }}
