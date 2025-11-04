@@ -44,7 +44,7 @@ const HeartLinkComplete = ({ player1Name, player2Name, roomId }: HeartLinkComple
           className="flex items-center justify-center"
           initial={{ opacity: 0, y: "10vh" }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 2, delay: 0.5 }}
+          transition={{ duration: 1, delay: 1 }}
         >
           <motion.div
             className="flex flex-col items-center justify-center text-center w-full px-4 sm:px-6 md:px-8 max-w-4xl"
