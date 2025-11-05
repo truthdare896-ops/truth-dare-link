@@ -7,6 +7,7 @@ import Home from "./pages/Home";
 import Lobby from "./pages/Lobby";
 import GameRoom from "./pages/GameRoom";
 import NotFound from "./pages/NotFound";
+import { PWAInstallButton } from "./components/PWAInstallButton";
 
 const queryClient = new QueryClient();
 
@@ -15,6 +16,7 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
+      <PWAInstallButton />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />

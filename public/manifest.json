@@ -1,0 +1,17 @@
+{
+  "name": "Heart Link",
+  "short_name": "Heart Link",
+  "description": "Connect through truth and dare",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#10002b",
+  "theme_color": "#7b2cbf",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "any",
+      "type": "image/x-icon"
+    }
+  ]
+}
