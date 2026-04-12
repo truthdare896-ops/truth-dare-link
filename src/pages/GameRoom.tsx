@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Heart, Send } from "lucide-react";
+import { Heart, Send, Users } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,6 +19,8 @@ interface Room {
   game_mode: "friendly" | "crush" | "adult";
   player1_name: string;
   player2_name: string;
+  players: string[] | null;
+  max_players: number | null;
   status: string;
 }
 
@@ -31,6 +33,11 @@ interface GameTurn {
   answer: string | null;
   answered_at: string | null;
 }
+
+const getNextPlayer = (players: string[], lastPlayerName: string): string => {
+  const idx = players.indexOf(lastPlayerName);
+  return players[(idx + 1) % players.length];
+};
 
 const GameRoom = () => {
   const { roomId } = useParams();
@@ -46,6 +53,7 @@ const GameRoom = () => {
   const [showWheel, setShowWheel] = useState(false);
   const [loading, setLoading] = useState(true);
   const [showCompletion, setShowCompletion] = useState(false);
+  const [activePlayerName, setActivePlayerName] = useState<string>("");
 
   useEffect(() => {
     if (!roomId || !playerName) {
@@ -78,22 +86,30 @@ const GameRoom = () => {
   }, [roomId, navigate, playerName]);
 
   useEffect(() => {
-    if (room && turns.length > 0) {
+    if (!room) return;
+
+    const players = (room.players as string[]) || [room.player1_name, room.player2_name].filter(Boolean);
+
+    if (turns.length > 0) {
       const lastTurn = turns[turns.length - 1];
-      
+
       if (lastTurn.answer) {
-        const nextPlayer = lastTurn.player_name === room.player1_name ? room.player2_name : room.player1_name;
+        const nextPlayer = getNextPlayer(players, lastTurn.player_name);
+        setActivePlayerName(nextPlayer);
         setIsMyTurn(nextPlayer === playerName);
         setCurrentTurn(null);
         setShowWheel(nextPlayer === playerName);
       } else {
+        setActivePlayerName(lastTurn.player_name);
         setCurrentTurn(lastTurn);
         setIsMyTurn(lastTurn.player_name === playerName);
         setShowWheel(false);
       }
-    } else if (room && turns.length === 0) {
-      setIsMyTurn(room.player1_name === playerName);
-      setShowWheel(room.player1_name === playerName);
+    } else {
+      const firstPlayer = players[0];
+      setActivePlayerName(firstPlayer);
+      setIsMyTurn(firstPlayer === playerName);
+      setShowWheel(firstPlayer === playerName);
     }
   }, [turns, room, playerName]);
 
@@ -185,7 +201,11 @@ const GameRoom = () => {
 
   if (!room) return null;
 
-  const heartProgress = Math.min(100, (turns.filter(t => t.answer).length / 20) * 100);
+  const players = (room.players as string[]) || [room.player1_name, room.player2_name].filter(Boolean) as string[];
+  const isMultiplayer = players.length > 2;
+  const totalTurnsForCompletion = players.length > 2 ? players.length * 4 : 20;
+  const answeredTurns = turns.filter(t => t.answer).length;
+  const heartProgress = Math.min(100, (answeredTurns / totalTurnsForCompletion) * 100);
 
   if (heartProgress >= 100 && !showCompletion) {
     setTimeout(() => setShowCompletion(true), 500);
@@ -212,55 +232,58 @@ const GameRoom = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <div className="flex items-center justify-between mb-4">
-            <motion.div
-              className={`glass-card px-4 py-2 rounded-lg transition-all ${
-                isMyTurn && room.player1_name === playerName
-                  ? "border-2 border-accent/60 bg-accent/10"
-                  : ""
-              }`}
-              animate={
-                isMyTurn && room.player1_name === playerName
-                  ? { scale: [1, 1.05, 1] }
-                  : {}
-              }
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-              }}
-            >
-              <p className="font-semibold">{room.player1_name}</p>
-            </motion.div>
-            <motion.div
-              animate={{
-                scale: [1, 1.2, 1],
-              }}
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-              }}
-            >
-              <Heart className="w-6 h-6 text-accent" fill="currentColor" />
-            </motion.div>
-            <motion.div
-              className={`glass-card px-4 py-2 rounded-lg transition-all ${
-                isMyTurn && room.player2_name === playerName
-                  ? "border-2 border-accent/60 bg-accent/10"
-                  : ""
-              }`}
-              animate={
-                isMyTurn && room.player2_name === playerName
-                  ? { scale: [1, 1.05, 1] }
-                  : {}
-              }
-              transition={{
-                duration: 1.5,
-                repeat: Infinity,
-              }}
-            >
-              <p className="font-semibold">{room.player2_name}</p>
-            </motion.div>
-          </div>
+          {isMultiplayer ? (
+            <div className="mb-4">
+              <div className="flex items-center gap-2 mb-3">
+                <Users className="w-4 h-4 text-accent" />
+                <span className="text-sm font-semibold text-muted-foreground">Players</span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {players.map((name) => (
+                  <motion.div
+                    key={name}
+                    className={`px-3 py-1.5 rounded-lg text-sm font-semibold transition-all glass-card ${
+                      activePlayerName === name
+                        ? "border-2 border-accent/60 bg-accent/10 text-accent"
+                        : "border border-accent/20 text-muted-foreground"
+                    }`}
+                    animate={
+                      activePlayerName === name ? { scale: [1, 1.05, 1] } : {}
+                    }
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                  >
+                    {name}
+                    {name === playerName && (
+                      <span className="ml-1 text-xs opacity-60">(you)</span>
+                    )}
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between mb-4">
+              {players.map((name) => (
+                <motion.div
+                  key={name}
+                  className={`glass-card px-4 py-2 rounded-lg transition-all ${
+                    activePlayerName === name
+                      ? "border-2 border-accent/60 bg-accent/10"
+                      : ""
+                  }`}
+                  animate={activePlayerName === name ? { scale: [1, 1.05, 1] } : {}}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                >
+                  <p className="font-semibold">{name}</p>
+                </motion.div>
+              ))}
+              <motion.div
+                animate={{ scale: [1, 1.2, 1] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                <Heart className="w-6 h-6 text-accent" fill="currentColor" />
+              </motion.div>
+            </div>
+          )}
           <HeartProgressBar progress={heartProgress} />
         </motion.div>
 
@@ -362,10 +385,7 @@ const GameRoom = () => {
                       <motion.div
                         className="text-center text-muted-foreground"
                         animate={{ opacity: [0.6, 1, 0.6] }}
-                        transition={{
-                          duration: 2,
-                          repeat: Infinity,
-                        }}
+                        transition={{ duration: 2, repeat: Infinity }}
                       >
                         <p>Waiting for {currentTurn.player_name} to answer...</p>
                       </motion.div>
@@ -382,10 +402,7 @@ const GameRoom = () => {
                   >
                     <motion.div
                       animate={{ y: [-10, 10, -10] }}
-                      transition={{
-                        duration: 3,
-                        repeat: Infinity,
-                      }}
+                      transition={{ duration: 3, repeat: Infinity }}
                     >
                       <Heart
                         className="w-16 h-16 text-accent mx-auto mb-4 animate-float"
@@ -395,11 +412,7 @@ const GameRoom = () => {
                     <p className="text-xl text-muted-foreground">
                       {isMyTurn
                         ? "Get ready for your turn!"
-                        : `Waiting for ${
-                            room.player1_name === playerName
-                              ? room.player2_name
-                              : room.player1_name
-                          }'s turn...`}
+                        : `Waiting for ${activePlayerName}'s turn...`}
                     </p>
                   </motion.div>
                 )}

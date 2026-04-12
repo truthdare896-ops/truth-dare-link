@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
-import { Heart } from "lucide-react";
+import { Heart, Users } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import FloatingHearts from "@/components/FloatingHearts";
@@ -15,12 +15,13 @@ const Home = () => {
   const navigate = useNavigate();
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [joinDialogOpen, setJoinDialogOpen] = useState(false);
-  
+
   const [createForm, setCreateForm] = useState({
     name: "",
     gameMode: "friendly" as "friendly" | "crush" | "adult",
+    maxPlayers: "2",
   });
-  
+
   const [joinForm, setJoinForm] = useState({
     name: "",
     roomCode: "",
@@ -41,6 +42,8 @@ const Home = () => {
       return;
     }
 
+    const maxPlayers = parseInt(createForm.maxPlayers);
+
     try {
       const roomCode = generateRoomCode();
       const { data, error } = await supabase
@@ -49,6 +52,8 @@ const Home = () => {
           room_code: roomCode,
           game_mode: createForm.gameMode,
           player1_name: createForm.name.trim(),
+          players: [createForm.name.trim()],
+          max_players: maxPlayers,
           status: "waiting",
         })
         .select()
@@ -74,21 +79,38 @@ const Home = () => {
         .select()
         .eq("room_code", joinForm.roomCode.toUpperCase())
         .eq("status", "waiting")
-        .single();
+        .maybeSingle();
 
       if (fetchError || !room) {
         toast.error("Room not found or already started");
         return;
       }
 
-      if (room.player2_name) {
+      const currentPlayers = (room.players as string[]) || [room.player1_name];
+      const maxPlayers = room.max_players || 2;
+
+      if (currentPlayers.includes(joinForm.name.trim())) {
+        toast.error("A player with this name already exists in this room");
+        return;
+      }
+
+      if (currentPlayers.length >= maxPlayers) {
         toast.error("Room is full");
         return;
       }
 
+      const updatedPlayers = [...currentPlayers, joinForm.name.trim()];
+      const updateData: Record<string, unknown> = {
+        players: updatedPlayers,
+      };
+
+      if (!room.player2_name) {
+        updateData.player2_name = joinForm.name.trim();
+      }
+
       const { error: updateError } = await supabase
         .from("rooms")
-        .update({ player2_name: joinForm.name.trim() })
+        .update(updateData)
         .eq("id", room.id);
 
       if (updateError) throw updateError;
@@ -98,6 +120,8 @@ const Home = () => {
       toast.error("Failed to join room. Please try again.");
     }
   };
+
+  const isFriendlyMode = createForm.gameMode === "friendly";
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative">
@@ -188,19 +212,60 @@ const Home = () => {
                   <Select
                     value={createForm.gameMode}
                     onValueChange={(value) =>
-                      setCreateForm({ ...createForm, gameMode: value as any })
+                      setCreateForm({
+                        ...createForm,
+                        gameMode: value as "friendly" | "crush" | "adult",
+                        maxPlayers: value === "friendly" ? createForm.maxPlayers : "2",
+                      })
                     }
                   >
                     <SelectTrigger id="game-mode" className="bg-input border-accent/20">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="bg-card border-accent/20">
-                      <SelectItem value="friendly">🤝 Friendly</SelectItem>
-                      <SelectItem value="crush">💕 Crush</SelectItem>
-                      <SelectItem value="adult">🔥 Adult</SelectItem>
+                      <SelectItem value="friendly">Friendly</SelectItem>
+                      <SelectItem value="crush">Crush</SelectItem>
+                      <SelectItem value="adult">Adult</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
+
+                {isFriendlyMode && (
+                  <motion.div
+                    className="space-y-2"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.25 }}
+                  >
+                    <Label htmlFor="max-players" className="flex items-center gap-2">
+                      <Users className="w-4 h-4 text-accent" />
+                      Number of Players
+                    </Label>
+                    <Select
+                      value={createForm.maxPlayers}
+                      onValueChange={(value) =>
+                        setCreateForm({ ...createForm, maxPlayers: value })
+                      }
+                    >
+                      <SelectTrigger id="max-players" className="bg-input border-accent/20">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-card border-accent/20">
+                        <SelectItem value="2">2 Players</SelectItem>
+                        <SelectItem value="3">3 Players</SelectItem>
+                        <SelectItem value="4">4 Players</SelectItem>
+                        <SelectItem value="5">5 Players</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {parseInt(createForm.maxPlayers) > 2 && (
+                      <p className="text-xs text-muted-foreground">
+                        Share the room code with up to {parseInt(createForm.maxPlayers) - 1} more friends
+                      </p>
+                    )}
+                  </motion.div>
+                )}
+
                 <Button
                   onClick={handleCreateRoom}
                   className="w-full bg-gradient-to-r from-primary to-accent glow-effect"
@@ -273,7 +338,7 @@ const Home = () => {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.7 }}
         >
-          <p>Two players • Real-time sync • Pure fun</p>
+          <p>2-5 players in Friendly mode • Real-time sync • Pure fun</p>
         </motion.div>
       </motion.div>
     </div>

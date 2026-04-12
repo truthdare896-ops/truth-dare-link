@@ -63,8 +63,10 @@ export type Database = {
           created_at: string | null
           game_mode: string
           id: string
+          max_players: number | null
           player1_name: string
           player2_name: string | null
+          players: Json | null
           room_code: string
           started_at: string | null
           status: string
@@ -73,8 +75,10 @@ export type Database = {
           created_at?: string | null
           game_mode: string
           id?: string
+          max_players?: number | null
           player1_name: string
           player2_name?: string | null
+          players?: Json | null
           room_code: string
           started_at?: string | null
           status?: string
@@ -83,8 +87,10 @@ export type Database = {
           created_at?: string | null
           game_mode?: string
           id?: string
+          max_players?: number | null
           player1_name?: string
           player2_name?: string | null
+          players?: Json | null
           room_code?: string
           started_at?: string | null
           status?: string

@@ -12,6 +12,8 @@ interface Room {
   game_mode: string;
   player1_name: string;
   player2_name: string | null;
+  players: string[] | null;
+  max_players: number | null;
   status: string;
 }
 
@@ -31,7 +33,7 @@ const Lobby = () => {
     }
 
     fetchRoom();
-    
+
     const channel = supabase
       .channel(`room-${roomId}`)
       .on(
@@ -46,7 +48,7 @@ const Lobby = () => {
           if (payload.eventType === "UPDATE") {
             const updatedRoom = payload.new as Room;
             setRoom(updatedRoom);
-            
+
             if (updatedRoom.status === "playing") {
               navigate(`/game/${roomId}`, { state: { playerName } });
             }
@@ -69,7 +71,7 @@ const Lobby = () => {
         .single();
 
       if (error) throw error;
-      setRoom(data);
+      setRoom(data as Room);
     } catch (error) {
       toast.error("Failed to load room");
       navigate("/");
@@ -88,8 +90,16 @@ const Lobby = () => {
   const startGame = async () => {
     if (!room) return;
 
-    if (!room.player2_name) {
-      toast.error("Waiting for player 2 to join");
+    const players = room.players || [room.player1_name];
+    const maxPlayers = room.max_players || 2;
+
+    if (players.length < 2) {
+      toast.error("Need at least 2 players to start");
+      return;
+    }
+
+    if (players.length < maxPlayers) {
+      toast.error(`Waiting for ${maxPlayers - players.length} more player(s) to join`);
       return;
     }
 
@@ -115,13 +125,12 @@ const Lobby = () => {
 
   if (!room) return null;
 
-  const gameModeEmoji = {
-    friendly: "🤝",
-    crush: "💕",
-    adult: "🔥",
-  };
+  const players = (room.players as string[]) || [room.player1_name, room.player2_name].filter(Boolean) as string[];
+  const maxPlayers = room.max_players || 2;
+  const slotsRemaining = maxPlayers - players.length;
+  const canStart = players.length >= 2 && players.length === maxPlayers;
 
-  const gameModeName = {
+  const gameModeLabel = {
     friendly: "Friendly",
     crush: "Crush",
     adult: "Adult",
@@ -161,11 +170,13 @@ const Lobby = () => {
           </motion.div>
           <h1 className="text-3xl font-bold mb-2 gradient-text">Game Lobby</h1>
           <div className="flex items-center justify-center gap-2 text-muted-foreground">
-            <span className="text-2xl">
-              {gameModeEmoji[room.game_mode as keyof typeof gameModeEmoji]}
-            </span>
             <span className="text-lg">
-              {gameModeName[room.game_mode as keyof typeof gameModeName]} Mode
+              {gameModeLabel[room.game_mode as keyof typeof gameModeLabel]} Mode
+            </span>
+            <span className="text-accent/60">•</span>
+            <span className="text-lg flex items-center gap-1">
+              <Users className="w-4 h-4" />
+              {players.length}/{maxPlayers}
             </span>
           </div>
         </motion.div>
@@ -200,75 +211,61 @@ const Lobby = () => {
           </motion.div>
 
           <div className="space-y-3">
-            <div className="flex items-center gap-2 text-muted-foreground mb-2">
-              <Users className="w-5 h-5" />
-              <span className="font-semibold">Players</span>
+            <div className="flex items-center justify-between text-muted-foreground mb-2">
+              <div className="flex items-center gap-2">
+                <Users className="w-5 h-5" />
+                <span className="font-semibold">Players</span>
+              </div>
+              <span className="text-sm text-accent/70">{players.length}/{maxPlayers} joined</span>
             </div>
 
-            <motion.div
-              className="glass-card p-4 rounded-xl border border-accent/30 bg-accent/5"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
-            >
-              <div className="flex items-center gap-3">
+            <AnimatePresence>
+              {players.map((name, index) => (
                 <motion.div
-                  className="w-3 h-3 rounded-full bg-accent"
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{
-                    duration: 1.5,
-                    repeat: Infinity,
-                  }}
-                />
-                <span className="text-lg font-semibold">{room.player1_name}</span>
-                {isHost && (
-                  <span className="text-xs bg-accent/30 px-2 py-1 rounded-full font-medium">
-                    Host
-                  </span>
-                )}
-              </div>
-            </motion.div>
-
-            <AnimatePresence mode="wait">
-              {room.player2_name ? (
-                <motion.div
+                  key={name}
                   className="glass-card p-4 rounded-xl border border-accent/30 bg-accent/5"
                   initial={{ opacity: 0, x: -20, scale: 0.95 }}
                   animate={{ opacity: 1, x: 0, scale: 1 }}
                   exit={{ opacity: 0, x: -20, scale: 0.95 }}
-                  transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                  transition={{ type: "spring", stiffness: 300, damping: 30, delay: index * 0.05 }}
                 >
                   <div className="flex items-center gap-3">
                     <motion.div
-                      className="w-3 h-3 rounded-full bg-accent"
+                      className="w-3 h-3 rounded-full bg-accent flex-shrink-0"
                       animate={{ scale: [1, 1.2, 1] }}
-                      transition={{
-                        duration: 1.5,
-                        repeat: Infinity,
-                      }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
                     />
-                    <span className="text-lg font-semibold">{room.player2_name}</span>
+                    <span className="text-lg font-semibold">{name}</span>
+                    {index === 0 && (
+                      <span className="text-xs bg-accent/30 px-2 py-1 rounded-full font-medium ml-auto">
+                        Host
+                      </span>
+                    )}
+                    {name === playerName && index !== 0 && (
+                      <span className="text-xs bg-primary/30 px-2 py-1 rounded-full font-medium ml-auto">
+                        You
+                      </span>
+                    )}
                   </div>
                 </motion.div>
-              ) : (
-                <motion.div
-                  className="glass-card p-4 rounded-xl border border-accent/30 border-dashed"
-                  initial={{ opacity: 0.5 }}
-                  animate={{ opacity: [0.5, 0.7, 0.5] }}
-                  transition={{
-                    duration: 2,
-                    repeat: Infinity,
-                  }}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-3 h-3 rounded-full bg-muted animate-pulse" />
-                    <span className="text-lg text-muted-foreground italic">
-                      Waiting for player 2...
-                    </span>
-                  </div>
-                </motion.div>
-              )}
+              ))}
             </AnimatePresence>
+
+            {Array.from({ length: slotsRemaining }).map((_, i) => (
+              <motion.div
+                key={`empty-${i}`}
+                className="glass-card p-4 rounded-xl border border-accent/30 border-dashed"
+                animate={{ opacity: [0.4, 0.65, 0.4] }}
+                transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-3 h-3 rounded-full bg-muted animate-pulse flex-shrink-0" />
+                  <span className="text-lg text-muted-foreground italic">
+                    Waiting for player {players.length + i + 1}...
+                  </span>
+                </div>
+              </motion.div>
+            ))}
           </div>
 
           <AnimatePresence>
@@ -278,14 +275,24 @@ const Lobby = () => {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
                 transition={{ duration: 0.3 }}
+                className="space-y-2"
               >
                 <Button
                   onClick={startGame}
-                  disabled={!room.player2_name}
+                  disabled={players.length < 2}
                   className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-primary to-accent glow-effect disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
-                  Start Game
+                  {canStart
+                    ? "Start Game"
+                    : players.length < 2
+                    ? "Need at least 2 players"
+                    : `Start with ${players.length} players`}
                 </Button>
+                {!canStart && players.length >= 2 && (
+                  <p className="text-center text-xs text-muted-foreground">
+                    You can start now or wait for all {maxPlayers} players
+                  </p>
+                )}
               </motion.div>
             )}
 
